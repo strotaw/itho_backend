@@ -1,0 +1,22 @@
+import { DateTime } from 'luxon'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
+
+export default class DataGuru extends BaseModel {
+  @column({ isPrimary: true })
+  declare id: number | undefined
+
+  @column() 
+  declare nama: string | undefined
+
+  @column()
+  declare mapelajaran: string | undefined
+
+  @column()
+  declare email: string | undefined
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | undefined
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | undefined
+}
