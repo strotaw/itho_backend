@@ -8,6 +8,8 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('title')
       table.string('author')
+      table.integer('stock')
+      table.string('category')
       table.timestamp('created_at', {useTz: true}).defaultTo(this.now())
       table.timestamp('updated_at', {useTz: true}).defaultTo(this.now())
     })

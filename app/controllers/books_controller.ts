@@ -1,8 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Book from '#models/book'
+import { createBookValidator, updateBookValidator, deleteBookValidator } from '#validators/create_book';
 
 export default class BooksController {
-    public async index({response }: HttpContext)
+    public async index({request, response }: HttpContext)
     {
         const books = await Book.all();
         return response.ok(books);
@@ -10,39 +11,40 @@ export default class BooksController {
 
     public async store({request, response }: HttpContext)
     { 
-        const data = request.only(['title', 'author']);
-        const book = await Book.create(data);
-        return response.created(book);
+        const payload = await request.validateUsing(createBookValidator);
+        const books = await Book.create(payload);
+        return response.created({message: "Buku Berhasil Ditambah", books});
     }
 
     public async show({params, response }: HttpContext)
     {
-        const book = await Book.find(params.id);
-        if (!book) {
-            return response.notFound({ message: 'Gada Cok' });
+        const books = await Book.find(params.id);
+        if (!books) {
+            return response.notFound({ message: 'Gada buku' });
         }
-        return response.ok(book);
+        return response.ok(books);
     }
 
     public async update({params, request, response }: HttpContext)
     {
-        const book = await Book.find(params.id);
-        if (!book) {
+        const data = await request.validateUsing(updateBookValidator);
+        const books = await Book.find(params.id);
+        if (!books) {
             return response.notFound({ message: 'Gada Cok' });
         }
-        const data = request.only(['title', 'author']); 
-        book.merge(data);
-        await book.save();
-        return response.ok(book);
+        books.merge(data);
+        await books.save();
+        return response.ok({message: "Buku Berhasil Diperbarui",books});
     } 
 
-    public async destroy({params, response }: HttpContext)
+    public async destroy({request, response }: HttpContext)
     {
-        const book = await Book.find(params.id);
-        if (!book) {
+        const {params} = await request.validateUsing(deleteBookValidator);
+        const books = await Book.find(params.id);
+        if (!books) {
             return response.notFound({ message: 'Gada Cok' });
         }
-        await book.delete();
+        await books.delete();
         return response.noContent();
     }
 }
